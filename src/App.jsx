@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import Controls from './components/Controls';
 import reactLogo from './assets/react.svg';
 import './App.css';
+import { Outlet, Routes, Route } from 'react-router-dom';
 
 function getMaterialData(id, materials, property) {
   for (const material of materials) {
@@ -36,7 +37,7 @@ function getMax(id, products, materials, allocated) {
   return Math.trunc(max) + allocated;
 }
 
-function App() {
+export default function App() {
   const [products, setProducts] = useState(null);
   const [materials, setMaterials] = useState(null);
   const [productMaterials, setProductMaterials] = useState(null);
@@ -169,8 +170,32 @@ function App() {
           ))}
         </tbody>
       </table>
+      <Routes>
+        <Route path="/" element={<Layout />}>
+          <Route index element={<Home />} />
+          <Route path="about" element={<About />} />
+        </Route>
+      </Routes>
     </>
   )
 }
 
-export default App
+function Layout() {
+  return (
+    <>
+      <Outlet />
+    </>
+  );
+}
+
+function Home() {
+  return (
+    <p>Home sweet home</p>
+  );
+}
+
+function About() {
+  return (
+    <p>Some info about whatever this is</p>
+  );
+}
