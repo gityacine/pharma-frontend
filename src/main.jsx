@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom/client';
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import Layout from './components/Layout.jsx';
 import Home from './components/Home.jsx';
-import Calculator from './components/Calculator.jsx';
+import Calculator, { loader as calculatorLoader } from './components/Calculator.jsx';
 import './index.css';
 
 const router = createBrowserRouter([
@@ -17,7 +17,8 @@ const router = createBrowserRouter([
       },
       {
         path: "calculator",
-        element: <Calculator />
+        element: <Calculator />,
+        loader: calculatorLoader
       }
     ]
   }
