@@ -10,7 +10,7 @@ export async function loader() {
 
     const productsData = await productsRes.json();
     productsData.forEach(product => {
-        product.allocated = 0;
+        product.allocated = "0";
     });
     const materials = await materialsRes.json();
     const productMaterials = await productMaterialsRes.json();
@@ -20,13 +20,14 @@ export async function loader() {
 export default function Calculator() {
     const { productsData } = useLoaderData();
     const [products, setProducts] = useState(productsData);
+    const [isOpen, setIsOpen] = useState(false);
 
     function allocate(id) {
         const nextProducts = products.map(product => {
             if (product.id === id) {
                 return {
                     ...product,
-                    allocated: product.allocated + 1,
+                    allocated: parseInt(product.allocated) + 1 + "",
                 };
             } else {
                 return product;
@@ -40,7 +41,7 @@ export default function Calculator() {
             if (product.id === id) {
                 return {
                     ...product,
-                    allocated: product.allocated - 1,
+                    allocated: parseInt(product.allocated) - 1 + "",
                 };
             } else {
                 return product;
@@ -54,7 +55,7 @@ export default function Calculator() {
             if (product.id === id && value >= 0) {
                 return {
                     ...product,
-                    allocated: parseInt(value),
+                    allocated: value,
                 };
             } else {
                 return product;
@@ -92,6 +93,20 @@ export default function Calculator() {
                     ))}
                 </tbody>
             </table>
+            <button
+                onClick={() => {
+                    setIsOpen(true);
+                }}
+            >Calculate</button>
+            <dialog open={isOpen}>
+                <h2>Dialog Title</h2>
+                <p>This is a dialog content.</p>
+                <button
+                    onClick={() => {
+                        setIsOpen(false);
+                    }}
+                >Close</button>
+            </dialog>
         </>
     );
 }
@@ -105,9 +120,7 @@ function AdvancedControls({ id, allocated, onAllocate, onDeallocate, onChange })
     }
 
     function onKeyPress(e) {
-        if (e.key === "e" || e.key === "." || e.key === "-" || e.key === "+") {
-            e.preventDefault();
-        } else if (e.key === "Enter") {
+        if (e.key === "Enter") {
             onChange(id, value);
             setIsEditing(false);
         }
@@ -123,11 +136,13 @@ function AdvancedControls({ id, allocated, onAllocate, onDeallocate, onChange })
     }
 
     function handleChange(e) {
-        if (e.target.value === "") {
-            setValue(0);
-        } else {
-            setValue(parseInt(e.target.value));
+        let newValue = e.target.value;
+        newValue = newValue.replace(/\D/g, '');
+        newValue = newValue.replace(/^0+/, '');
+        if (newValue === "") {
+            newValue = "0";
         }
+        setValue(newValue);
     }
 
     return (
@@ -141,10 +156,10 @@ function AdvancedControls({ id, allocated, onAllocate, onDeallocate, onChange })
             >-</button>
             {isEditing ? (
                 <input
-                    type="number"
                     onKeyDown={onKeyPress}
-                    value={value.toString()}
-                    min={0}
+                    inputMode="numeric"
+                    pattern="[0-9]"
+                    value={value}
                     onChange={handleChange}
                     onFocus={selectInput}
                     autoFocus={true}
