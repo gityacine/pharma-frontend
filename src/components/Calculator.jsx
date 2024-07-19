@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useLoaderData } from "react-router-dom";
 
 export async function loader() {
@@ -20,7 +20,7 @@ export async function loader() {
 export default function Calculator() {
     const { productsData } = useLoaderData();
     const [products, setProducts] = useState(productsData);
-    const [isOpen, setIsOpen] = useState(false);
+    const modalRef = useRef(null);
 
     function allocate(id) {
         const nextProducts = products.map(product => {
@@ -64,6 +64,18 @@ export default function Calculator() {
         setProducts(nextProducts);
     }
 
+    function openModal() {
+        if (modalRef.current) {
+            modalRef.current.showModal();
+        }
+    }
+
+    function closeModal() {
+        if (modalRef.current) {
+            modalRef.current.close();
+        }
+    }
+
     return (
         <>
             <h1>This is the Calculator route</h1>
@@ -94,17 +106,13 @@ export default function Calculator() {
                 </tbody>
             </table>
             <button
-                onClick={() => {
-                    setIsOpen(true);
-                }}
+                onClick={openModal}
             >Calculate</button>
-            <dialog open={isOpen}>
+            <dialog ref={modalRef}>
                 <h2>Dialog Title</h2>
                 <p>This is a dialog content.</p>
                 <button
-                    onClick={() => {
-                        setIsOpen(false);
-                    }}
+                    onClick={closeModal}
                 >Close</button>
             </dialog>
         </>
